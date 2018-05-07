@@ -3,12 +3,12 @@ const Sequelize = require('sequelize');//use the third part module
 
 const Process = require('process');
 // console.log(Process.env)
-const sequelize = new Sequelize(Process.env.localdb,{define: {
+const db = new Sequelize(Process.env.localdb,{define: {
     timestamps: false, // true by default
     freezeTableName: true,
     underscored: true,
   }});
-sequelize
+db
   .authenticate()
   .then(() => {
     console.log('Connection has been established successfully.');
@@ -16,12 +16,12 @@ sequelize
   .catch(err => {
     console.error('Unable to connect to the database:', err);
   });
-const User = sequelize.define('User',{
+const UserModel = db.define('User',{
   userId:{
     type: Sequelize.INTEGER,
     primaryKey: true,
     autoIncrement: true
-  }
+  },
   firstName:{
     type: Sequelize.STRING,
     allowNull: false
@@ -31,7 +31,7 @@ const User = sequelize.define('User',{
     allowNull: false
   }
 })
-const Expenses = sequelize.define('Expenses',{
+const ExpensesModel = db.define('Expenses',{
   expensesId:{
     type: Sequelize.INTEGER,
     primaryKey: true,
@@ -43,15 +43,22 @@ const Expenses = sequelize.define('Expenses',{
   gas:{
     type: Sequelize.FLOAT
   },
+  food:{
+    type: Sequelize.FLOAT
+  },
   misselanious:{
     type: Sequelize.FLOAT
+  },
+  date:{
+    type:Sequelize.DATEONLY,
+    defaultValue: Sequelize.NOW
   },
   userId:{
     type:Sequelize.INTEGER,
     allowNull: false
   }
 })
-const IndiaTransfer = sequelize.define('indiaTransfer',{
+const IndiaTransferModel = db.define('indiaTransfer',{
   indiaTransferId:{
     type: Sequelize.INTEGER,
     primaryKey: true,
@@ -75,12 +82,12 @@ const IndiaTransfer = sequelize.define('indiaTransfer',{
     allowNull: false
   }
 })
-const Recepent = sequelize.define('recepent',{
+const RecepentModel = db.define('recepent',{
   recepentId:{
     type: Sequelize.INTEGER,
     primaryKey: true,
     autoIncrement: true
-  }
+  },
   firstName:{
     type: Sequelize.STRING,
     allowNull: false
@@ -90,7 +97,7 @@ const Recepent = sequelize.define('recepent',{
     allowNull: false
   }
 })
-const PayCheck = sequelize.define('PayCheck',{
+const PayCheckModel = db.define('PayCheck',{
   PayCheckId:{
     type: Sequelize.INTEGER,
     primaryKey: true,
@@ -128,3 +135,44 @@ const PayCheck = sequelize.define('PayCheck',{
     type: Sequelize.FLOAT
   }
 })
+// User.sync({force:true}).then(()=>{
+//   return User.create({
+//     firstName: 'santosh',
+//     lastName: 'kesireddy'
+//   }
+//   )
+// })
+// Expenses.sync({force:true}).then(()=>{
+//   return Expenses.create({
+//     food: 11.9,
+//     userId:1
+//   }
+//   )
+// })
+insertExpenses=()=>{
+  return Expenses.create({
+      food: 8.19,
+      transport:7,
+      userId:1,
+      date:"2018-01-23"
+    })
+};
+
+insertUser = ()=>{
+  return User.create({
+    firstName: 'krishna',
+    lastName: 'kesireddy'
+    })
+};
+// db.models.User.findOne({where:{
+//   userId:2
+// }}).then(users=>{
+//   console.log(users)
+// })
+// insertUser();
+// insertExpenses();
+// console.log(sequelize.models)
+// const User = db.models.user;
+// const Expenses = db.models.expenses;
+// export {User,Expenses}
+module.exports = db;
