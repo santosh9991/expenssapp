@@ -29,6 +29,23 @@ const UserModel = db.define('User',{
   lastName:{
     type: Sequelize.STRING,
     allowNull: false
+  },
+  companyId:{
+    type:Sequelize.INTEGER,
+  }
+})
+const CompanyModel = db.define('Company',
+{
+  companyId:{
+    type:Sequelize.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  name:{
+    type: Sequelize.STRING
+  },
+  description:{
+  type: Sequelize.STRING
   }
 })
 const ExpensesModel = db.define('Expenses',{
@@ -135,10 +152,21 @@ const PayCheckModel = db.define('PayCheck',{
     type: Sequelize.FLOAT
   }
 })
-// User.sync({force:true}).then(()=>{
-//   return User.create({
-//     firstName: 'santosh',
-//     lastName: 'kesireddy'
+// ExpensesModel.hasMany(UserModel,{foreignKey: 'department_id'});
+UserModel.hasMany(ExpensesModel,{foreignKey: 'userId'});
+UserModel.findAll({include:[ ExpensesModel ]}).then(employees=>{
+  console.log(JSON.stringify(employees))
+})
+db.models.User.findOne({where:{userId:1}}).then(employees=>{
+  console.log(JSON.stringify(employees))
+})
+// console.log("Expenses",
+// db.models.Expenses.findAll({where:{userId:1}}))
+// CompanyModel.sync({force:true}).then(()=>{
+//   return CompanyModel.create({
+//     companyId: 1,
+//     name: 'Apple',
+//     description:"iphone"
 //   }
 //   )
 // })
@@ -149,6 +177,8 @@ const PayCheckModel = db.define('PayCheck',{
 //   }
 //   )
 // })
+
+
 insertExpenses=()=>{
   return Expenses.create({
       food: 8.19,
